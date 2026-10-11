@@ -141,3 +141,21 @@ the laser actually starting in Act 3 has something to be a change from.
   the small accent-coloured labels after the flip; all now clear 4.5:1 (see
   report). This is strictly a better execution of the SAME world decision,
   not a new one.
+- **Second correction, user's words: "I want white. Clean modern. Light
+  blue accent use white and very light blue can you make a 3d animation on
+  the hero."** This is a real pivot, not a tweak: it drops the warm-paper
+  technical-drawing palette for a white canvas / very-light-blue surface /
+  one light-blue accent (`#4DA3FF`, darkened to `#1E73D1` for small text,
+  same reasoning as the first correction), and replaces the hero's flat SVG
+  blueprint scene with an actual Three.js 3D render of the laser-cut plate
+  (real WebGL, not a video or generated image, built from code so it needs
+  no AI asset either) that idle-rotates, tilts with the hero's own scroll
+  progress, and responds to pointer on desktop. Every accent/contrast pair
+  was re-measured after the palette change (see report). The laser-cut
+  peak's kerf line and callouts now render in light blue instead of orange;
+  the "literal metal" tone (`--dmp-steel`) shifted from warm steel-grey to a
+  cool blue-grey. Two bugs surfaced and were fixed in the same pass: a
+  stray `position: relative` on `.close` was silently un-pinning the
+  closing act (present before this pivot too, just never noticed), and the
+  mobile hero was vertically centering instead of flowing from the top,
+  overlapping the fixed nav bar.
