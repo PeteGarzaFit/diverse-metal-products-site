@@ -41,6 +41,9 @@
 
 body { background: var(--sc-canvas); }
 
+/* nav jumps land below the fixed bar instead of underneath it */
+section[id] { scroll-margin-top: 4.5rem; }
+
 /* ---- nav bar ------------------------------------------------------------ */
 .bar {
   position: fixed; inset-inline: 0; top: 0; z-index: var(--sc-z-chrome);
@@ -335,6 +338,32 @@ body { background: var(--sc-canvas); }
   border-radius: var(--sc-r-pill); padding: 0.5em 1.1em;
 }
 @media (max-width: 640px) { .stats__row { grid-template-columns: repeat(3, 1fr); gap: var(--sc-4); } .stats__num { font-size: var(--sc-t-2xl); } }
+
+/* ================================================================
+   6d · PICKUP & DELIVERY (address + live map)
+   ================================================================ */
+.visit {
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--sc-7); align-items: stretch;
+}
+.visit__info h2 { margin-top: var(--sc-2); }
+.visit__info .sc-body { margin-top: var(--sc-3); }
+.visit__address {
+  font-style: normal; margin-top: var(--sc-5); color: var(--sc-ink);
+  font-size: var(--sc-t-base); line-height: 1.55;
+}
+.visit__phone { margin: var(--sc-3) 0 0; color: var(--sc-ink-soft); }
+.visit__phone a { color: var(--sc-ink); font-weight: 600; text-decoration-color: var(--sc-hairline-strong); text-underline-offset: 3px; }
+.visit__info .cta { margin-top: var(--sc-5); align-self: flex-start; }
+.visit__map {
+  min-height: 22rem; border-radius: var(--sc-r-md); overflow: hidden;
+  border: 1px solid var(--sc-hairline); box-shadow: var(--sc-e1); background: var(--sc-surface);
+}
+.visit__map iframe { display: block; width: 100%; height: 100%; min-height: 22rem; border: 0; }
+@media (max-width: 860px) {
+  .visit { grid-template-columns: 1fr; gap: var(--sc-6); }
+  .visit__map, .visit__map iframe { min-height: 18rem; }
+}
 
 /* ================================================================
    6c · FAQ
