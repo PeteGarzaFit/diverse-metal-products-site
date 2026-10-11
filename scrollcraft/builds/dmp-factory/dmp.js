@@ -6,6 +6,49 @@
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+  // ---- quote form: upload-to-email via Web3Forms --------------------------
+  // No backend on this site, so the form posts straight to Web3Forms, which
+  // emails the submission (including the attached file) to DMP. Replace the
+  // access_key hidden input's value with a real key from web3forms.com
+  // before this goes live; until then submissions will fail visibly.
+  const quoteForm = document.getElementById('quoteForm');
+  if (quoteForm) {
+    const status = quoteForm.querySelector('.close__status');
+    const submitBtn = quoteForm.querySelector('.close__submit');
+    quoteForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const key = quoteForm.querySelector('[name="access_key"]').value;
+      if (!key || key === 'WEB3FORMS_ACCESS_KEY') {
+        status.textContent = 'Form isn’t connected yet — call 713-637-4187 or email info@diversemetalproducts.com for now.';
+        status.dataset.state = 'error';
+        return;
+      }
+      submitBtn.disabled = true;
+      status.dataset.state = '';
+      status.textContent = 'Sending…';
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(quoteForm),
+        });
+        const data = await res.json();
+        if (data.success) {
+          status.textContent = 'Sent. We’ll get back to you with a quote.';
+          status.dataset.state = 'ok';
+          quoteForm.reset();
+        } else {
+          throw new Error(data.message || 'Send failed');
+        }
+      } catch (err) {
+        status.textContent = 'Something went wrong — call 713-637-4187 or email info@diversemetalproducts.com instead.';
+        status.dataset.state = 'error';
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  }
+
   // ---- nav bar: solid on scroll -------------------------------------------
   const bar = document.querySelector('[data-bar]');
   if (bar) {

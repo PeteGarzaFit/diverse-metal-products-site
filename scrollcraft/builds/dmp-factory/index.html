@@ -236,18 +236,137 @@
     </div>
   </section>
 
-  <!-- 7 · COMMITMENT — pin, close. Spotlight + magnetic CTA. Last element on the page. -->
-  <section id="quote" data-sc-act="pin" data-sc-span="1.2" data-sc-drift="#FFFFFF">
-    <div data-sc-stage class="close" data-sc-spotlight>
-      <div class="close__inner">
-        <p class="eyebrow eyebrow--accent" data-sc-cue="0.02">6614 Dixie Dr, Houston, TX 77087</p>
-        <h2 class="sc-display sc-display--lg" data-sc-cue="0.06" data-sc-kinetic="lines">Send the print. We'll quote the part.</h2>
-        <div class="close__actions" data-sc-cue="0.1" data-sc-rise="0">
-          <a class="cta" href="tel:+17136374187" data-sc-magnet="0.26">Call 713-637-4187</a>
-          <a class="cta cta--ghost" href="mailto:info@diversemetalproducts.com">Request a quote</a>
+  <!-- 6b · STATS + MATERIALS — plain flow, real counts only -->
+  <section class="sc-section sc-section--tight" data-sc-drift="#FFFFFF">
+    <div class="sc-wrap stats">
+      <div class="stats__row" data-sc-in data-sc-stagger="70">
+        <div class="stats__tile">
+          <p class="stats__num"><span data-sc-count="0 9">0</span></p>
+          <p class="stats__label">Industries served</p>
+        </div>
+        <div class="stats__tile">
+          <p class="stats__num"><span data-sc-count="0 6">0</span>+</p>
+          <p class="stats__label">Metals, plus plastic sheet</p>
+        </div>
+        <div class="stats__tile">
+          <p class="stats__num"><span data-sc-count="0 4">0</span></p>
+          <p class="stats__label">File formats accepted</p>
         </div>
       </div>
-      <footer class="foot">
+      <div class="chips" data-sc-in data-sc-stagger="40" aria-label="Materials we work with">
+        <span class="chip">Carbon steel</span>
+        <span class="chip">Stainless steel</span>
+        <span class="chip">Aluminum</span>
+        <span class="chip">Copper</span>
+        <span class="chip">Brass</span>
+        <span class="chip">Nickel</span>
+        <span class="chip">Plastic sheet</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6c · FAQ — plain flow, native accordion -->
+  <section class="sc-section sc-section--tight" data-sc-drift="#FAFCFE">
+    <div class="sc-wrap faq">
+      <div class="sc-stack" data-sc-in data-sc-stagger="60">
+        <p class="eyebrow">Questions</p>
+        <h2 class="sc-display sc-display--md">Before you upload a print</h2>
+      </div>
+      <div class="faq__list" data-sc-in data-sc-stagger="50">
+        <details class="faq__item">
+          <summary>What file formats do you accept?</summary>
+          <p class="sc-body">.dxf, .dwg, .iges and .pdf. Customers are also welcome to load their CAD files directly into our system, which cuts programming time and keeps the part honest to the print.</p>
+        </details>
+        <details class="faq__item">
+          <summary>What materials can you work with?</summary>
+          <p class="sc-body">Stainless steel, carbon steel, aluminum, copper, brass, nickel and plastic sheet, cut, stamped and finished in-house.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Is there a minimum order size?</summary>
+          <p class="sc-body">We run small runs and large, from a single prototype to full production. Tell us what you need when you request a quote.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Do you handle finishing too?</summary>
+          <p class="sc-body">Yes: painting, grinding &amp; finishing, wet sanding, plating and polishing, added only where a job needs it.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Can you work to defense or DFARS specifications?</summary>
+          <p class="sc-body">Yes. We build parts such as oxygen scrubbers and burners to DFARS and MTR specification today.</p>
+        </details>
+        <details class="faq__item">
+          <summary>What happens after I upload a print?</summary>
+          <p class="sc-body">Your file and details come straight to our team by email. We review the print and get back to you with a quote.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · COMMITMENT — flow, real upload-to-email quote form. Last element on the page. -->
+  <section id="quote" class="sc-section" data-sc-drift="#FFFFFF">
+    <div class="sc-wrap close">
+      <div class="close__head" data-sc-in data-sc-stagger="60">
+        <p class="eyebrow eyebrow--accent">6614 Dixie Dr, Houston, TX 77087</p>
+        <h2 class="sc-display sc-display--lg">Send the print. We'll quote the part.</h2>
+        <p class="sc-body">Upload your file below, or call if you'd rather talk it through first.</p>
+        <a class="cta cta--ghost close__call" href="tel:+17136374187">Call 713-637-4187</a>
+      </div>
+
+      <form class="close__form" id="quoteForm" data-sc-in data-sc-stagger="40">
+        <input type="hidden" name="access_key" value="WEB3FORMS_ACCESS_KEY">
+        <input type="hidden" name="subject" value="New quote request — diversemetalproducts.com">
+        <input type="hidden" name="from_name" value="DMP site quote form">
+        <input type="checkbox" name="botcheck" class="close__honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <div class="field-row">
+          <label class="field">
+            <span>Name</span>
+            <input type="text" name="name" required autocomplete="name">
+          </label>
+          <label class="field">
+            <span>Email</span>
+            <input type="email" name="email" required autocomplete="email">
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span>Phone (optional)</span>
+            <input type="tel" name="phone" autocomplete="tel">
+          </label>
+          <label class="field">
+            <span>Material</span>
+            <select name="material">
+              <option value="">Not sure yet</option>
+              <option>Carbon steel</option>
+              <option>Stainless steel</option>
+              <option>Aluminum</option>
+              <option>Copper</option>
+              <option>Brass</option>
+              <option>Nickel</option>
+              <option>Plastic sheet</option>
+              <option>Other</option>
+            </select>
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span>Quantity (optional)</span>
+            <input type="text" name="quantity" placeholder="e.g. 1 prototype, or 500 run">
+          </label>
+          <label class="field field--file">
+            <span>Print (.dxf, .dwg, .iges, .pdf)</span>
+            <input type="file" name="attachment" accept=".dxf,.dwg,.iges,.igs,.pdf,.png,.jpg,.jpeg">
+          </label>
+        </div>
+        <label class="field">
+          <span>Notes (optional)</span>
+          <textarea name="message" rows="3" placeholder="Anything we should know about the part, tolerance or timeline"></textarea>
+        </label>
+
+        <button class="cta close__submit" type="submit">Send for a quote</button>
+        <p class="close__status" role="status" aria-live="polite"></p>
+      </form>
+
+      <footer class="foot foot--static">
         <span>Diverse Metal Products · Houston, TX</span>
         <span>ISO 9001:2015 compliant</span>
       </footer>
