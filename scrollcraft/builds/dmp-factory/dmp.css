@@ -390,15 +390,15 @@ section[id] { scroll-margin-top: 4.5rem; }
 /* ================================================================
    7 · CLOSE
    ================================================================ */
-.close { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%; padding: var(--sc-8) var(--sc-gutter); }
+.close { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .close__inner { max-width: 40rem; }
 .close h2 { margin-top: var(--sc-2); }
 .close__actions { display: flex; flex-wrap: wrap; gap: var(--sc-4); justify-content: center; margin-top: var(--sc-7); }
 .close__hint { margin: var(--sc-4) 0 0; font-size: var(--sc-t-sm); color: var(--sc-ink-soft); }
 .foot {
-  position: absolute; left: 0; right: 0; bottom: var(--sc-5);
   display: flex; justify-content: space-between; gap: var(--sc-4);
-  padding-inline: var(--sc-gutter);
+  padding: var(--sc-5) var(--sc-gutter) var(--sc-6);
+  border-top: 1px solid var(--sc-hairline);
   color: var(--sc-ink-soft); font-size: var(--sc-t-xs);
 }
 @media (max-width: 560px) { .foot { flex-direction: column; gap: var(--sc-1); text-align: center; } }
