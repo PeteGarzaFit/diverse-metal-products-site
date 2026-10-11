@@ -32,8 +32,9 @@
 
 <main id="top">
 
-  <!-- 1 · RECOGNITION — pin, live 3D hero, kinetic greet headline -->
-  <section data-sc-act="pin" data-sc-span="2.6" data-sc-drift="#FFFFFF">
+  <!-- 1 · RECOGNITION — pin. A live laser-cutting cell behind the machine's
+       viewing window; scroll expands the window and dollies into the cut. -->
+  <section data-sc-act="pin" data-sc-span="3.2" data-sc-dwell="0.25" data-sc-drift="#FFFFFF">
     <div data-sc-stage class="hero">
       <div class="hero__ground" aria-hidden="true"></div>
 
@@ -49,16 +50,38 @@
       </div>
 
       <div class="hero__layout">
-        <div class="hero__copy">
-          <p class="eyebrow">Houston, TX · ISO&nbsp;9001:2015 compliant</p>
-          <h1 class="sc-display sc-display--lg" data-sc-kinetic="lines">Every part starts as a flat sheet and a print.</h1>
-          <p class="sc-body hero__sub">Diverse Metal Products turns customer drawings into cut, stamped and finished metal parts, in carbon steel, stainless, aluminum, copper, brass and plastic sheet, from first prototype to full production runs.</p>
-          <a class="cta cta--ghost" href="#cut">See the cut</a>
+        <div class="hero__copy" data-sc-cue="0 0.34 0">
+          <p class="eyebrow hero__in" style="--i:0">Houston, TX · ISO&nbsp;9001:2015 compliant</p>
+          <h1 class="sc-display sc-display--lg hero__title">
+            <span class="hero__line"><span style="--i:1">Every part starts</span></span>
+            <span class="hero__line"><span style="--i:2">as a flat sheet</span></span>
+            <span class="hero__line"><span style="--i:3">and a print.</span></span>
+          </h1>
+          <p class="sc-body hero__sub hero__in" style="--i:4">Laser cutting, stamping and finishing in steel, stainless, aluminum, copper and brass, from one prototype to full production.</p>
+          <a class="cta hero__in" style="--i:5" href="#cut">See the cut</a>
         </div>
 
-        <div class="hero__scene" id="heroScene" aria-hidden="true">
-          <div class="hero__scene-fallback"></div>
+        <div class="hero__scene" id="heroScene" aria-hidden="true"></div>
+      </div>
+
+      <div class="hero__window-shadow" aria-hidden="true"></div>
+      <div class="hero__window" id="heroWindow" aria-hidden="true">
+        <div class="hud">
+          <div class="hud__top">
+            <span class="hud__tag"><i class="hud__dot"></i>TruLaser 1030 · fiber</span>
+            <span class="hud__xy" data-hud="xy">X 0000.0  Y 0000.0</span>
+          </div>
+          <div class="hud__bottom">
+            <span class="hud__state" data-hud="state">Rapid</span>
+            <span class="hud__bar"><i data-hud="bar"></i></span>
+          </div>
         </div>
+      </div>
+
+      <div class="hero__caption" data-sc-cue="0.44 1 0.22 0.14">
+        <p class="hero__caption-eyebrow">Inside the TruLaser 1030</p>
+        <h2 class="hero__caption-title">Cut straight from your print.</h2>
+        <p class="hero__caption-body">Fiber laser cutting in carbon steel, stainless, aluminum, copper and brass, from one prototype to a full production run.</p>
       </div>
     </div>
   </section>
@@ -324,7 +347,13 @@
 <script src="scrollcraft.js"></script>
 <script>window.__sc = ScrollCraft.mount(document.body);</script>
 <script src="dmp.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 <script src="dmp-scene.js"></script>
 </body>
 </html>
