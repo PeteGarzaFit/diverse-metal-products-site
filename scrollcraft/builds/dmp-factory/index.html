@@ -12,8 +12,10 @@
 <script>
   // A refresh always starts at the top of the hero: don't restore the old
   // scroll position, and drop any #section left in the URL by a nav click.
+  // Exception: #directions / #visit is a shareable link that opens at the map.
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  window.__dmpOpenAtMap = location.hash === '#directions' || location.hash === '#visit';
+  if (location.hash && !window.__dmpOpenAtMap) history.replaceState(null, '', location.pathname + location.search);
 </script>
 <link rel="stylesheet" href="scrollcraft.css">
 <link rel="stylesheet" href="dmp.css">

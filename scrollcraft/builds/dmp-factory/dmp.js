@@ -6,12 +6,20 @@
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  // ---- every load starts at the top -----------------------------------------
-  // (instant, not smooth: the page sets scroll-behavior: smooth)
-  const toTop = () => window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-  toTop();
-  window.addEventListener('load', toTop);
-  window.addEventListener('pageshow', (e) => { if (e.persisted) toTop(); });
+  // ---- every load starts at the top, except a #directions link --------------
+  // (instant, not smooth: the page sets scroll-behavior: smooth). The map
+  // jump re-runs once the pinned acts and fonts have settled their heights.
+  const startPosition = () => {
+    const map = window.__dmpOpenAtMap && document.getElementById('visit');
+    if (map) map.scrollIntoView({ block: 'start', behavior: 'instant' });
+    else window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  };
+  startPosition();
+  window.addEventListener('load', startPosition);
+  if (window.__dmpOpenAtMap && document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => setTimeout(startPosition, 50));
+  }
+  window.addEventListener('pageshow', (e) => { if (e.persisted) startPosition(); });
 
   // ---- nav bar: solid on scroll -------------------------------------------
   const bar = document.querySelector('[data-bar]');
