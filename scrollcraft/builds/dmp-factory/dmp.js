@@ -95,4 +95,25 @@
   function relayout() { window.dispatchEvent(new Event('resize')); }
   window.addEventListener('load', relayout);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+
+  // Mobile browsers (DuckDuckGo, Safari, Chrome) resize the viewport live as
+  // their address bar collapses or expands during scroll. The engine
+  // deliberately skips a full relayout for a height-only change on mobile, to
+  // avoid jumping the page under the reader's thumb, but that leaves every
+  // act's travel math stale against the new viewport height. For the LAST
+  // pinned act that can mean its content's opacity cues miscompute right as
+  // the reader reaches the bottom of the page, since there is no further
+  // section to carry the mismatch. Force one real relayout, debounced so it
+  // fires only once the address bar has actually settled.
+  if (window.__sc && window.__sc.layout) {
+    var relayoutTimer = 0;
+    var settleRelayout = function () {
+      clearTimeout(relayoutTimer);
+      relayoutTimer = setTimeout(function () { window.__sc.layout(); }, 220);
+    };
+    window.addEventListener('resize', settleRelayout, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', settleRelayout, { passive: true });
+    }
+  }
 })();
