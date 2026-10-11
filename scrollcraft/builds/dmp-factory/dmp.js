@@ -6,6 +6,13 @@
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+  // ---- every load starts at the top -----------------------------------------
+  // (instant, not smooth: the page sets scroll-behavior: smooth)
+  const toTop = () => window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  toTop();
+  window.addEventListener('load', toTop);
+  window.addEventListener('pageshow', (e) => { if (e.persisted) toTop(); });
+
   // ---- nav bar: solid on scroll -------------------------------------------
   const bar = document.querySelector('[data-bar]');
   if (bar) {
