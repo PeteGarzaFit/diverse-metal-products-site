@@ -364,6 +364,7 @@ body { background: var(--sc-canvas); }
 .close__inner { max-width: 40rem; }
 .close h2 { margin-top: var(--sc-2); }
 .close__actions { display: flex; flex-wrap: wrap; gap: var(--sc-4); justify-content: center; margin-top: var(--sc-7); }
+.close__hint { margin: var(--sc-4) 0 0; font-size: var(--sc-t-sm); color: var(--sc-ink-soft); }
 .foot {
   position: absolute; left: 0; right: 0; bottom: var(--sc-5);
   display: flex; justify-content: space-between; gap: var(--sc-4);
