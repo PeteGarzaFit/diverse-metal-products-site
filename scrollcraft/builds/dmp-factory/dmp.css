@@ -1,0 +1,249 @@
+/* Diverse Metal Products — page theme and markup, on top of scrollcraft.css.
+   Do not restyle .sc-stage, .sc-copy or any [data-sc-*] selector: those are
+   the mechanism. Everything below is this page's own classes. */
+
+:root {
+  /* Light theme: the technical-drawing world is ink on warm paper, so the
+     whole page is the paper, not a dark ground with paper insets. */
+  --sc-canvas:      #EDE7D9;
+  --sc-surface:     #D7D4C7;
+  --sc-ink:         #1B180F;
+  --sc-ink-soft:    #544C3C;
+  --sc-accent:      #E85B1C;
+  --sc-accent-ink:  #1B180F;
+
+  /* a darker, desaturated step of the accent for small text on paper, where
+     the full-brightness accent does not clear body-text contrast */
+  --sc-accent-text: #B5430E;
+
+  --sc-font-display: "Archivo", system-ui, sans-serif;
+  --sc-font-text:    "Archivo", system-ui, sans-serif;
+  --sc-font-mono:    "IBM Plex Mono", ui-monospace, monospace;
+
+  /* the literal sheet metal in the laser + stamp panels: cool steel against
+     the warm paper canvas, so material and print read as two different things */
+  --dmp-steel: #C7CBC6;
+  --dmp-ink-paper: var(--sc-ink);
+
+  /* shadows and edge light re-tuned for a light ground: lower alpha, warm
+     shadow hue instead of near-black, and the edge highlight is now white
+     rather than ink-tinted (taste.md, "If the canvas is light") */
+  --sc-shadow-color: 32 28% 22%;
+  --sc-e1: 0 1px 2px hsl(var(--sc-shadow-color) / 0.14),
+           0 2px 6px -1px hsl(var(--sc-shadow-color) / 0.10);
+  --sc-e2: 0 2px 4px hsl(var(--sc-shadow-color) / 0.12),
+           0 8px 18px -4px hsl(var(--sc-shadow-color) / 0.15);
+  --sc-e3: 0 4px 8px hsl(var(--sc-shadow-color) / 0.11),
+           0 18px 40px -8px hsl(var(--sc-shadow-color) / 0.19),
+           0 48px 90px -24px hsl(var(--sc-shadow-color) / 0.15);
+  --sc-edge: inset 0 1px 0 color-mix(in oklab, white 75%, transparent);
+}
+
+body { background: var(--sc-canvas); }
+
+/* ---- nav bar ------------------------------------------------------------ */
+.bar {
+  position: fixed; inset-inline: 0; top: 0; z-index: var(--sc-z-chrome);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--sc-4) var(--sc-gutter);
+  gap: var(--sc-5);
+  transition: background var(--sc-d-base) var(--sc-ease-out), backdrop-filter var(--sc-d-base) var(--sc-ease-out);
+}
+.bar.is-solid { background: color-mix(in oklab, var(--sc-canvas) 86%, transparent); backdrop-filter: blur(10px); box-shadow: var(--sc-e1); }
+.bar__mark { display: flex; align-items: center; gap: var(--sc-2); color: var(--sc-ink); text-decoration: none; font-family: var(--sc-font-display); font-weight: 700; letter-spacing: var(--sc-track-normal); font-size: var(--sc-t-sm); }
+.bar__mark svg { width: 20px; height: 18px; fill: none; stroke: var(--sc-accent); stroke-width: 2; }
+.bar__rail { display: none; gap: var(--sc-6); list-style: none; }
+.bar__rail a { color: var(--sc-ink-soft); text-decoration: none; font-size: var(--sc-t-sm); transition: color var(--sc-d-fast) var(--sc-ease-out); }
+.bar__rail a:hover { color: var(--sc-ink); }
+.bar__rail a[aria-current="true"] { color: var(--sc-accent-text); }
+@media (min-width: 860px) { .bar__rail { display: flex; } }
+.bar__cta {
+  font-family: var(--sc-font-text); font-weight: 600; font-size: var(--sc-t-sm);
+  color: var(--sc-accent-ink); background: var(--sc-accent);
+  padding: 0.6em 1.1em; border-radius: var(--sc-r-pill); text-decoration: none;
+  transition: transform var(--sc-d-fast) var(--sc-ease-out), box-shadow var(--sc-d-fast) var(--sc-ease-out);
+}
+.bar__cta:hover { transform: translateY(-1px); box-shadow: var(--sc-e2); }
+.bar__cta:active { transform: scale(0.97); }
+.bar__cta:focus-visible { outline: 2px solid var(--sc-ink); outline-offset: 3px; }
+
+@media (max-width: 560px) {
+  .bar { padding-block: var(--sc-3); }
+  .bar__mark span { display: none; }
+  .bar__mark svg { width: 24px; height: 21px; }
+  .bar__cta { font-size: var(--sc-t-xs); padding: 0.55em 0.9em; white-space: nowrap; }
+}
+
+/* ---- shared bits ---------------------------------------------------------*/
+.eyebrow { font-family: var(--sc-font-mono); font-size: var(--sc-t-xs); letter-spacing: var(--sc-track-wide); text-transform: uppercase; color: var(--sc-ink-soft); margin: 0 0 var(--sc-3); }
+.eyebrow--accent { color: var(--sc-accent-text); font-weight: 500; }
+
+.cta {
+  display: inline-flex; align-items: center; gap: var(--sc-2);
+  font-family: var(--sc-font-text); font-weight: 600; font-size: var(--sc-t-base);
+  color: var(--sc-accent-ink); background: var(--sc-accent);
+  padding: 0.85em 1.6em; border-radius: var(--sc-r-pill); text-decoration: none;
+  white-space: nowrap; border: 1px solid transparent;
+  transition: transform var(--sc-d-fast) var(--sc-ease-out), box-shadow var(--sc-d-fast) var(--sc-ease-out);
+}
+.cta:hover { transform: translateY(-2px); box-shadow: var(--sc-e3); }
+.cta:active { transform: scale(0.97); }
+.cta:focus-visible { outline: 2px solid var(--sc-ink); outline-offset: 3px; }
+.cta--ghost { background: transparent; color: var(--sc-ink); border-color: var(--sc-hairline-strong); }
+.cta--ghost:hover { border-color: var(--sc-accent); color: var(--sc-ink); box-shadow: none; }
+
+.dim-label { font-family: var(--sc-font-mono); font-size: 13px; letter-spacing: 0.04em; fill: currentColor; }
+.dim-label--lg { font-size: 20px; }
+
+.sc-section--tight { padding-block: clamp(3rem, 6vw, 6.5rem); }
+
+/* ================================================================
+   1 · HERO
+   ================================================================ */
+.hero { background: var(--sc-canvas); overflow: hidden; }
+.hero__ground {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 72% 28%, color-mix(in oklab, var(--sc-accent) 9%, transparent), transparent 60%);
+}
+.hero__plane { position: absolute; inset: -10% -10% -10% -10%; color: var(--sc-ink); pointer-events: none; }
+.hero__plane svg { width: 100%; height: 100%; }
+.hero__plane--grid { color: color-mix(in oklab, var(--sc-ink) 14%, transparent); }
+.hero__plane--sheet { inset: 10% 6% 10% 52%; color: color-mix(in oklab, var(--sc-ink) 55%, transparent); }
+.hero__plane--leaders { inset: 10% 6% 10% 52%; color: var(--sc-accent); opacity: 0.9; }
+.hero__plane--leaders .dim-label { fill: var(--sc-accent-text); }
+
+.hero__copy {
+  position: relative; z-index: 2;
+  max-width: 50rem;
+  padding: 0 var(--sc-gutter);
+  margin-top: clamp(2rem, 8vh, 6rem);
+}
+.hero .sc-display--lg { max-width: 24ch; }
+.hero__sub { margin-top: var(--sc-4); max-width: 46ch; }
+.hero__copy .cta { margin-top: var(--sc-6); }
+.hero .sc-display--xl { line-height: var(--sc-leading-tight); }
+
+@media (max-width: 760px) {
+  /* The full technical drawing is a desktop depth cue, not essential content:
+     on a phone it fought the header for space, so mobile keeps the grid
+     texture only and drops the sheet + leader-line detail entirely. */
+  .hero__plane--sheet, .hero__plane--leaders { display: none; }
+  .hero__copy { max-width: none; margin-top: clamp(4.5rem, 14vh, 7rem); }
+}
+
+/* ================================================================
+   2 · STAKES (quiet, administrative)
+   ================================================================ */
+.stakes { max-width: 56rem; }
+.stakes h2 { max-width: 28ch; }
+.stakes__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sc-6); margin-top: var(--sc-8); }
+.stakes__kicker { font-family: var(--sc-font-mono); font-size: var(--sc-t-xs); letter-spacing: var(--sc-track-wide); text-transform: uppercase; color: var(--sc-accent); margin: 0 0 var(--sc-2); }
+@media (max-width: 760px) { .stakes__grid { grid-template-columns: 1fr; gap: var(--sc-5); } }
+
+/* ================================================================
+   3 · LASER (peak / signature move)
+   ================================================================ */
+.laser { background: var(--sc-canvas); overflow: hidden; }
+.laser__ground {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 46%, color-mix(in oklab, var(--sc-accent) 7%, transparent), transparent 65%);
+}
+.laser__copy {
+  position: absolute; top: clamp(2rem, 7vh, 5rem); left: 0; right: 0;
+  text-align: center; z-index: 2; padding-inline: var(--sc-gutter);
+}
+.laser__copy h2 { margin-top: var(--sc-3); }
+
+.laser__plate {
+  position: relative; z-index: 1; margin: 0 auto;
+  width: min(760px, 86vw);
+  aspect-ratio: 900 / 700;
+  margin-top: clamp(7rem, 20vh, 11rem);
+  filter: drop-shadow(0 20px 40px rgb(32 24 12 / 0.18));
+}
+.laser__plate svg { width: 100%; height: 100%; overflow: visible; }
+
+.plate-sheet { fill: var(--dmp-steel); stroke: var(--dmp-ink-paper); stroke-width: 2.5; }
+.plate-hatch { stroke: var(--dmp-ink-paper); stroke-width: 1; }
+.plate-cut { fill: var(--sc-ink); stroke: var(--dmp-ink-paper); stroke-width: 2; opacity: 0; }
+.kerf-path { fill: none; stroke: var(--sc-accent); stroke-width: 3; filter: drop-shadow(0 0 4px color-mix(in oklab, var(--sc-accent) 55%, transparent)); }
+.laser-head { fill: var(--sc-accent); filter: drop-shadow(0 1px 3px color-mix(in oklab, var(--sc-accent) 60%, transparent)); }
+.laser-head__dot { fill: var(--sc-canvas); }
+.dim-callout { color: var(--dmp-ink-paper); opacity: 0; transition: opacity var(--sc-d-slow) var(--sc-ease-out); }
+.dim-callout path { stroke: currentColor; stroke-width: 1; }
+.dim-callout text { fill: currentColor; }
+.dim-callout.is-on { opacity: 1; }
+
+.laser__caption { position: absolute; left: 0; right: 0; bottom: clamp(2rem, 6vh, 4rem); text-align: center; margin: 0 auto; max-width: 42ch; padding-inline: var(--sc-gutter); color: var(--sc-ink-soft); }
+
+@media (max-width: 760px) {
+  .laser__plate { width: min(560px, 92vw); margin-top: clamp(6rem, 24vh, 9rem); }
+}
+
+/* ================================================================
+   4 · STAMP (flow act + reveal device)
+   ================================================================ */
+.stamp { padding-block: clamp(4rem, 9vw, 9rem); position: relative; }
+.stamp__intro { max-width: 40rem; }
+.stamp__intro p { margin-top: var(--sc-4); }
+
+.stamp__figure {
+  position: relative; margin: var(--sc-8) auto 0; width: min(640px, 90vw);
+  aspect-ratio: 700 / 500; color: var(--dmp-ink-paper);
+}
+.stamp__svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.stamp__svg--before { z-index: 1; }
+.stamp__svg--after { z-index: 2; }
+
+.stamp__press { position: absolute; inset: 0; pointer-events: none; z-index: 3; mix-blend-mode: normal; opacity: 0; }
+.stamp__ram, .stamp__die { display: none; } /* reserved: kept minimal, press read happens through the SVG states rather than an extra die graphic */
+
+.stamp__list { list-style: none; margin: var(--sc-9) auto 0; max-width: 46rem; display: grid; gap: var(--sc-4); }
+.stamp__list li { color: var(--sc-ink-soft); padding-left: var(--sc-4); border-left: 1px solid var(--sc-hairline-strong); }
+.stamp__list strong { color: var(--sc-ink); font-weight: 700; }
+
+/* ================================================================
+   5 · RANGE (pan rail)
+   ================================================================ */
+.rail { display: flex; align-items: center; gap: var(--sc-7); height: 100%; padding-inline: var(--sc-gutter); width: max-content; }
+.rail__lead { width: clamp(16rem, 28vw, 22rem); flex: 0 0 auto; }
+.rail__lead h2 { margin-top: var(--sc-2); max-width: 16ch; }
+.item {
+  flex: 0 0 auto; width: clamp(15rem, 22vw, 18rem); min-height: 15rem;
+  background: var(--sc-surface); border: 1px solid var(--sc-hairline);
+  border-radius: var(--sc-r-md); padding: var(--sc-6);
+  box-shadow: var(--sc-e1);
+  display: flex; flex-direction: column; justify-content: flex-end; gap: var(--sc-3);
+}
+.item h3 { font-family: var(--sc-font-display); font-size: var(--sc-t-lg); color: var(--sc-ink); margin: 0; font-weight: 700; }
+.item p { color: var(--sc-ink-soft); margin: 0; font-size: var(--sc-t-sm); }
+.rail__close { width: clamp(14rem, 20vw, 18rem); flex: 0 0 auto; }
+
+/* ================================================================
+   6 · TRUST (quiet, administrative)
+   ================================================================ */
+.trust { max-width: 50rem; }
+.trust h2 { max-width: 30ch; }
+.trust__link { display: inline-block; margin-top: var(--sc-6); color: var(--sc-ink); text-decoration: underline; text-decoration-color: var(--sc-hairline-strong); text-underline-offset: 4px; }
+.trust__link:hover { text-decoration-color: var(--sc-accent); }
+
+/* ================================================================
+   7 · CLOSE
+   ================================================================ */
+.close { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%; padding: var(--sc-8) var(--sc-gutter); position: relative; }
+.close__inner { max-width: 40rem; }
+.close h2 { margin-top: var(--sc-2); }
+.close__actions { display: flex; flex-wrap: wrap; gap: var(--sc-4); justify-content: center; margin-top: var(--sc-7); }
+.foot {
+  position: absolute; left: 0; right: 0; bottom: var(--sc-5);
+  display: flex; justify-content: space-between; gap: var(--sc-4);
+  padding-inline: var(--sc-gutter);
+  color: var(--sc-ink-soft); font-size: var(--sc-t-xs);
+}
+@media (max-width: 560px) { .foot { flex-direction: column; gap: var(--sc-1); text-align: center; } }
+
+/* ---- reduced motion: keep meaning, drop position change ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  .hero__plane { transform: none !important; }
+}
