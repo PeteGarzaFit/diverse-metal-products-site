@@ -302,71 +302,17 @@
   </section>
 
   <!-- 7 · COMMITMENT — flow, real upload-to-email quote form. Last element on the page. -->
-  <section id="quote" class="sc-section" data-sc-drift="#FFFFFF">
-    <div class="sc-wrap close">
-      <div class="close__head" data-sc-in data-sc-stagger="60">
-        <p class="eyebrow eyebrow--accent">6614 Dixie Dr, Houston, TX 77087</p>
-        <h2 class="sc-display sc-display--lg">Send the print. We'll quote the part.</h2>
-        <p class="sc-body">Upload your file below, or call if you'd rather talk it through first.</p>
-        <a class="cta cta--ghost close__call" href="tel:+17136374187">Call 713-637-4187</a>
+  <section id="quote" data-sc-act="pin" data-sc-span="1.2" data-sc-drift="#FFFFFF">
+    <div data-sc-stage class="close" data-sc-spotlight>
+      <div class="close__inner">
+        <p class="eyebrow eyebrow--accent" data-sc-cue="0.02">6614 Dixie Dr, Houston, TX 77087</p>
+        <h2 class="sc-display sc-display--lg" data-sc-cue="0.06" data-sc-kinetic="lines">Send the print. We'll quote the part.</h2>
+        <div class="close__actions" data-sc-cue="0.1" data-sc-rise="0">
+          <a class="cta" href="tel:+17136374187" data-sc-magnet="0.26">Call 713-637-4187</a>
+          <a class="cta cta--ghost" href="mailto:info@diversemetalproducts.com">Request a quote</a>
+        </div>
       </div>
-
-      <form class="close__form" id="quoteForm" data-sc-in data-sc-stagger="40">
-        <input type="hidden" name="access_key" value="WEB3FORMS_ACCESS_KEY">
-        <input type="hidden" name="subject" value="New quote request — diversemetalproducts.com">
-        <input type="hidden" name="from_name" value="DMP site quote form">
-        <input type="checkbox" name="botcheck" class="close__honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
-
-        <div class="field-row">
-          <label class="field">
-            <span>Name</span>
-            <input type="text" name="name" required autocomplete="name">
-          </label>
-          <label class="field">
-            <span>Email</span>
-            <input type="email" name="email" required autocomplete="email">
-          </label>
-        </div>
-        <div class="field-row">
-          <label class="field">
-            <span>Phone (optional)</span>
-            <input type="tel" name="phone" autocomplete="tel">
-          </label>
-          <label class="field">
-            <span>Material</span>
-            <select name="material">
-              <option value="">Not sure yet</option>
-              <option>Carbon steel</option>
-              <option>Stainless steel</option>
-              <option>Aluminum</option>
-              <option>Copper</option>
-              <option>Brass</option>
-              <option>Nickel</option>
-              <option>Plastic sheet</option>
-              <option>Other</option>
-            </select>
-          </label>
-        </div>
-        <div class="field-row">
-          <label class="field">
-            <span>Quantity (optional)</span>
-            <input type="text" name="quantity" placeholder="e.g. 1 prototype, or 500 run">
-          </label>
-          <label class="field field--file">
-            <span>Print (.dxf, .dwg, .iges, .pdf)</span>
-            <input type="file" name="attachment" accept=".dxf,.dwg,.iges,.igs,.pdf,.png,.jpg,.jpeg">
-          </label>
-        </div>
-        <label class="field">
-          <span>Notes (optional)</span>
-          <textarea name="message" rows="3" placeholder="Anything we should know about the part, tolerance or timeline"></textarea>
-        </label>
-
-        <button class="cta close__submit" type="submit">Send for a quote</button>
-        <p class="close__status" role="status" aria-live="polite"></p>
-      </form>
-
-      <footer class="foot foot--static">
+      <footer class="foot">
         <span>Diverse Metal Products · Houston, TX</span>
         <span>ISO 9001:2015 compliant</span>
       </footer>
