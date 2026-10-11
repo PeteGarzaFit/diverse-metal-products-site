@@ -283,18 +283,31 @@ body { background: var(--sc-canvas); }
 /* ================================================================
    5 · RANGE (pan rail)
    ================================================================ */
-.rail { display: flex; align-items: flex-start; gap: var(--sc-7); height: 100%; padding-inline: var(--sc-gutter); padding-top: clamp(7rem, 18vh, 10rem); width: max-content; }
-.rail__lead { width: clamp(16rem, 28vw, 22rem); flex: 0 0 auto; }
+/* One shared centerline: every rail item is centered vertically in the space
+   below the fixed nav bar, so the heading, the cards and the closing note sit
+   on the same axis with equal space above and below the row. */
+.rail {
+  display: flex; align-items: center; gap: var(--sc-7);
+  height: 100%; width: max-content;
+  padding-inline: var(--sc-gutter);
+  padding-top: clamp(3.5rem, 8vh, 4.75rem);
+}
+.rail__lead { width: clamp(15rem, 24vw, 20rem); flex: 0 0 auto; }
 .rail__lead h2 { margin-top: var(--sc-2); max-width: 16ch; }
 .item {
-  flex: 0 0 auto; width: clamp(15rem, 22vw, 18rem); min-height: 15rem;
+  flex: 0 0 auto; width: clamp(15rem, 21vw, 19rem); height: clamp(15rem, 36vh, 19rem);
   background: var(--sc-surface); border: 1px solid var(--sc-hairline);
   border-radius: var(--sc-r-md); padding: var(--sc-6);
   box-shadow: var(--sc-e1);
-  display: flex; flex-direction: column; justify-content: flex-end; gap: var(--sc-3);
+  display: flex; flex-direction: column;
 }
-.item h3 { font-family: var(--sc-font-display); font-size: var(--sc-t-lg); color: var(--sc-ink); margin: 0; font-weight: 700; }
-.item p { color: var(--sc-ink-soft); margin: 0; font-size: var(--sc-t-sm); }
+/* accent bar + title anchored to the top, description anchored to the bottom */
+.item::before {
+  content: ""; display: block; width: 28px; height: 3px; border-radius: 3px;
+  background: var(--sc-accent);
+}
+.item h3 { font-family: var(--sc-font-display); font-size: var(--sc-t-lg); color: var(--sc-ink); margin: var(--sc-5) 0 0; font-weight: 700; line-height: 1.15; }
+.item p { color: var(--sc-ink-soft); margin: auto 0 0; padding-top: var(--sc-4); font-size: var(--sc-t-sm); line-height: 1.55; }
 .rail__close { width: clamp(14rem, 20vw, 18rem); flex: 0 0 auto; }
 
 /* ================================================================
