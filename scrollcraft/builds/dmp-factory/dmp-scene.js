@@ -20,7 +20,6 @@
   const smooth = (a, b, v) => { const t = clamp01((v - a) / (b - a)); return t * t * (3 - 2 * t); };
   const lerp = (a, b, t) => a + (b - a) * t;
   const easeOut = (t) => 1 - Math.pow(1 - t, 3);
-  const easeIn = (t) => t * t * t;
   const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
   // ---- window geometry: card (from the layout slot) -> expanded --------------
@@ -218,111 +217,181 @@
     sheet.position.y = TOP - SHEET_T / 2;
     pallet.add(sheet);
 
-    function outerShape() {
-      const w = 1.34, h = 0.88, r = 0.12, nw = 0.26, nh = 0.14;
-      const x0 = -w / 2, x1 = w / 2, y0 = -h / 2, y1 = h / 2;
-      const s = new THREE.Shape();
-      s.moveTo(x0 + r, y0);
-      s.lineTo(-nw / 2, y0); s.lineTo(-nw / 2, y0 + nh); s.lineTo(nw / 2, y0 + nh); s.lineTo(nw / 2, y0);
-      s.lineTo(x1 - r, y0); s.quadraticCurveTo(x1, y0, x1, y0 + r);
+    // ---- the part library: real DMP part types, one cut per cycle -----------
+    // Each part is an outline plus inner contours (holes, slots, windows).
+    // Inner contours cut first, then the outline, like a real program.
+    const circle = (x, y, r) => { const p = new THREE.Path(); p.absarc(x, y, r, 0, Math.PI * 2, false); return p; };
+    const stadium = (x0, x1, y, r) => {
+      const p = new THREE.Path();
+      p.moveTo(x0, y - r); p.lineTo(x1, y - r);
+      p.absarc(x1, y, r, -Math.PI / 2, Math.PI / 2, false);
+      p.lineTo(x0, y + r);
+      p.absarc(x0, y, r, Math.PI / 2, Math.PI * 1.5, false);
+      return p;
+    };
+    const roundRect = (Kind, x0, y0, x1, y1, r) => {
+      const s = new Kind();
+      s.moveTo(x0 + r, y0); s.lineTo(x1 - r, y0); s.quadraticCurveTo(x1, y0, x1, y0 + r);
       s.lineTo(x1, y1 - r); s.quadraticCurveTo(x1, y1, x1 - r, y1);
       s.lineTo(x0 + r, y1); s.quadraticCurveTo(x0, y1, x0, y1 - r);
       s.lineTo(x0, y0 + r); s.quadraticCurveTo(x0, y0, x0 + r, y0);
       return s;
+    };
+    const PARTS = [
+      {
+        name: 'Shaker screen plate',
+        outer() {
+          const w = 1.34, h = 0.88, r = 0.12, nw = 0.26, nh = 0.14;
+          const x0 = -w / 2, x1 = w / 2, y0 = -h / 2, y1 = h / 2;
+          const s = new THREE.Shape();
+          s.moveTo(x0 + r, y0);
+          s.lineTo(-nw / 2, y0); s.lineTo(-nw / 2, y0 + nh); s.lineTo(nw / 2, y0 + nh); s.lineTo(nw / 2, y0);
+          s.lineTo(x1 - r, y0); s.quadraticCurveTo(x1, y0, x1, y0 + r);
+          s.lineTo(x1, y1 - r); s.quadraticCurveTo(x1, y1, x1 - r, y1);
+          s.lineTo(x0 + r, y1); s.quadraticCurveTo(x0, y1, x0, y1 - r);
+          s.lineTo(x0, y0 + r); s.quadraticCurveTo(x0, y0, x0 + r, y0);
+          return s;
+        },
+        holes: () => [circle(-0.38, 0.16, 0.075), circle(0, 0.16, 0.075), circle(0.38, 0.16, 0.075), stadium(-0.25, 0.25, -0.12, 0.05)],
+      },
+      {
+        name: 'Gusset bracket',
+        outer() {
+          const s = new THREE.Shape();
+          s.moveTo(-0.5, -0.4); s.lineTo(0.52, -0.4);
+          s.quadraticCurveTo(0.64, -0.4, 0.56, -0.3);
+          s.lineTo(-0.52, 0.36);
+          s.quadraticCurveTo(-0.62, 0.44, -0.62, 0.3);
+          s.lineTo(-0.62, -0.28);
+          s.quadraticCurveTo(-0.62, -0.4, -0.5, -0.4);
+          return s;
+        },
+        holes: () => [circle(-0.46, -0.24, 0.055), circle(0.3, -0.26, 0.055), circle(-0.46, 0.14, 0.055), circle(-0.2, -0.12, 0.11)],
+      },
+      {
+        name: 'Membrane disc',
+        outer() { const s = new THREE.Shape(); s.absarc(0, 0, 0.44, 0, Math.PI * 2, false); return s; },
+        holes() {
+          const h = [circle(0, 0, 0.08)];
+          for (let i = 0; i < 8; i++) {
+            const a = (i / 8) * Math.PI * 2;
+            h.push(circle(Math.cos(a) * 0.27, Math.sin(a) * 0.27, 0.045));
+          }
+          return h;
+        },
+      },
+      {
+        name: 'Hurricane clamp',
+        outer() {
+          const s = new THREE.Shape();
+          s.moveTo(-0.5, -0.15); s.lineTo(0.5, -0.15);
+          s.absarc(0.5, 0, 0.15, -Math.PI / 2, Math.PI / 2, false);
+          s.lineTo(-0.5, 0.15);
+          s.absarc(-0.5, 0, 0.15, Math.PI / 2, Math.PI * 1.5, false);
+          return s;
+        },
+        holes: () => [-0.5, -0.25, 0, 0.25, 0.5].map((x) => circle(x, 0, 0.045)),
+      },
+      {
+        name: 'Control panel',
+        outer: () => roundRect(THREE.Shape, -0.6, -0.4, 0.6, 0.4, 0.06),
+        holes: () => [
+          roundRect(THREE.Path, -0.46, 0, 0.1, 0.28, 0.03),
+          circle(0.26, 0.14, 0.06), circle(0.44, 0.14, 0.06),
+          stadium(-0.32, 0.32, -0.2, 0.04),
+          circle(-0.52, -0.32, 0.03), circle(0.52, -0.32, 0.03), circle(-0.52, 0.32, 0.03), circle(0.52, 0.32, 0.03),
+        ],
+      },
+    ];
+
+    // ---- one cutting program per part, built up front ------------------------
+    // Cut speed is tuned per part so every part takes about the same time.
+    const CUT_TIME = 6.5, RAPID_SPEED = 2.8, PIERCE = 0.28;
+    const home = new THREE.Vector2(-1.9, 0.95);
+    const HW = 0.0065;
+    const KY = TOP + 0.0012;
+
+    function buildProgram(def) {
+      const outerPath = def.outer();
+      const contours = [
+        ...def.holes().map((p) => p.getSpacedPoints(Math.max(40, Math.round(p.getLength() * 90)))),
+        outerPath.getSpacedPoints(Math.max(120, Math.round(outerPath.getLength() * 60))),
+      ];
+      const cums = contours.map((pts) => {
+        const cum = [0];
+        for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + pts[i].distanceTo(pts[i - 1]));
+        return cum;
+      });
+      const total = cums.reduce((sum, c) => sum + c[c.length - 1], 0);
+      const speed = Math.min(1.5, Math.max(0.6, total / CUT_TIME));
+
+      const moves = [];
+      let clock = 0;
+      let at = home.clone();
+      contours.forEach((pts, ci) => {
+        const start = pts[0];
+        moves.push({ type: 'rapid', t0: clock, dur: Math.max(0.2, at.distanceTo(start) / RAPID_SPEED), from: at.clone(), to: start.clone() });
+        clock += moves[moves.length - 1].dur;
+        moves.push({ type: 'pierce', t0: clock, dur: PIERCE, at: start.clone() });
+        clock += PIERCE;
+        const cum = cums[ci];
+        const len = cum[cum.length - 1];
+        moves.push({ type: 'cut', t0: clock, dur: len / speed, pts, cum, len });
+        clock += len / speed;
+        at = pts[pts.length - 1].clone();
+      });
+      const cutEnd = clock;
+      moves.push({ type: 'rapid', t0: clock, dur: 1.0, from: at.clone(), to: home.clone() });
+
+      // kerf: a thin ribbon on the sheet; each vertex knows the program time it
+      // was cut, so the shader can draw it white-hot and let it cool to a groove
+      const kerfPos = [];
+      const kerfTime = [];
+      moves.filter((m) => m.type === 'cut').forEach((m) => {
+        for (let i = 0; i < m.pts.length - 1; i++) {
+          const a = m.pts[i], b = m.pts[i + 1];
+          const ax = a.x, az = -a.y, bx = b.x, bz = -b.y;
+          const dx = bx - ax, dz = bz - az;
+          const l = Math.hypot(dx, dz) || 1e-6;
+          const nx = (-dz / l) * HW, nz = (dx / l) * HW;
+          const ta = m.t0 + m.cum[i] / speed;
+          const tb = m.t0 + m.cum[i + 1] / speed;
+          kerfPos.push(ax + nx, KY, az + nz, ax - nx, KY, az - nz, bx + nx, KY, bz + nz);
+          kerfPos.push(ax - nx, KY, az - nz, bx - nx, KY, bz - nz, bx + nx, KY, bz + nz);
+          kerfTime.push(ta, ta, tb, ta, tb, tb);
+        }
+      });
+      const kerfGeo = new THREE.BufferGeometry();
+      kerfGeo.setAttribute('position', new THREE.Float32BufferAttribute(kerfPos, 3));
+      kerfGeo.setAttribute('aTime', new THREE.Float32BufferAttribute(kerfTime, 1));
+
+      const solid = def.outer();
+      solid.holes.push(...def.holes());
+      const partGeo = new THREE.ExtrudeGeometry(solid, { depth: SHEET_T, bevelEnabled: false, curveSegments: 24 });
+      partGeo.rotateX(-Math.PI / 2);
+      const voidGeo = new THREE.ShapeGeometry(def.outer(), 24);
+      voidGeo.rotateX(-Math.PI / 2);
+
+      return { name: def.name, moves, cutEnd, programEnd: cutEnd + 1.0, kerfGeo, partGeo, voidGeo };
     }
-    const holes = [-0.38, 0, 0.38].map((x) => {
-      const p = new THREE.Path();
-      p.absarc(x, 0.16, 0.075, 0, Math.PI * 2, false);
-      return p;
-    });
-    const slotPath = (() => {
-      const p = new THREE.Path();
-      p.moveTo(-0.25, -0.17);
-      p.lineTo(0.25, -0.17);
-      p.absarc(0.25, -0.12, 0.05, -Math.PI / 2, Math.PI / 2, false);
-      p.lineTo(-0.25, -0.07);
-      p.absarc(-0.25, -0.12, 0.05, Math.PI / 2, Math.PI * 1.5, false);
-      return p;
-    })();
-    const partShape = outerShape();
-    partShape.holes.push(...holes, slotPath);
+    const programs = PARTS.map(buildProgram);
 
     // the finished part reads a shade brighter than the sheet it came from
+    const HOT = new THREE.Color(0xff6a1a);
+    const FLASH = new THREE.Color(0x4da3ff);
     const partMat = new THREE.MeshStandardMaterial({
       map: brushed, color: 0xe4ebf2, metalness: 0.45, roughness: 0.42,
-      emissive: new THREE.Color(0xff6a1a), emissiveIntensity: 0,
+      emissive: HOT.clone(), emissiveIntensity: 0,
     });
-    const partGeo = new THREE.ExtrudeGeometry(partShape, { depth: SHEET_T, bevelEnabled: false, curveSegments: 24 });
-    partGeo.rotateX(-Math.PI / 2);
-    const part = new THREE.Mesh(partGeo, partMat);
+    const part = new THREE.Mesh(programs[0].partGeo, partMat);
     part.visible = false;
     pallet.add(part);
 
-    const voidGeo = new THREE.ShapeGeometry(outerShape(), 24);
-    voidGeo.rotateX(-Math.PI / 2);
-    const voidMesh = new THREE.Mesh(voidGeo, new THREE.MeshBasicMaterial({ color: 0x030507 }));
+    const voidMesh = new THREE.Mesh(programs[0].voidGeo, new THREE.MeshBasicMaterial({ color: 0x030507 }));
     voidMesh.position.y = TOP + 0.0004;
     voidMesh.visible = false;
     pallet.add(voidMesh);
 
-    // ---- the cutting program: inner contours first, then the outline -------
-    const CUT_SPEED = 0.85, RAPID_SPEED = 2.8, PIERCE = 0.32;
-    const contours = [
-      ...holes.map((h) => h.getSpacedPoints(56)),
-      slotPath.getSpacedPoints(72),
-      outerShape().getSpacedPoints(240),
-    ];
-    const home = new THREE.Vector2(-1.9, 0.95);
-    const moves = [];
-    let clock = 0;
-    let at = home.clone();
-    contours.forEach((pts) => {
-      const start = pts[0];
-      const rd = at.distanceTo(start);
-      moves.push({ type: 'rapid', t0: clock, dur: Math.max(0.25, rd / RAPID_SPEED), from: at.clone(), to: start.clone() });
-      clock += moves[moves.length - 1].dur;
-      moves.push({ type: 'pierce', t0: clock, dur: PIERCE, at: start.clone() });
-      clock += PIERCE;
-      const cum = [0];
-      for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + pts[i].distanceTo(pts[i - 1]));
-      const len = cum[cum.length - 1];
-      moves.push({ type: 'cut', t0: clock, dur: len / CUT_SPEED, pts, cum, len });
-      clock += len / CUT_SPEED;
-      at = pts[pts.length - 1].clone();
-    });
-    const CUT_END = clock;
-    moves.push({ type: 'rapid', t0: clock, dur: 1.0, from: at.clone(), to: home.clone() });
-    const PROGRAM_END = clock + 1.0;
-
-    const LIFT = 2.2, HOLD = 1.8, SWAP = 1.25;
-    const T_LIFT = CUT_END;
-    const T_OUT = T_LIFT + LIFT + HOLD;
-    const T_IN = T_OUT + SWAP;
-    const LOOP = T_IN + SWAP;
-
-    // kerf: a thin ribbon on the sheet; each vertex knows the program time it
-    // was cut, so the shader can draw it white-hot and let it cool to a groove
-    const kerfPos = [];
-    const kerfTime = [];
-    const HW = 0.0065;
-    const KY = TOP + 0.0012;
-    moves.filter((m) => m.type === 'cut').forEach((m) => {
-      for (let i = 0; i < m.pts.length - 1; i++) {
-        const a = m.pts[i], b = m.pts[i + 1];
-        const ax = a.x, az = -a.y, bx = b.x, bz = -b.y;
-        const dx = bx - ax, dz = bz - az;
-        const l = Math.hypot(dx, dz) || 1e-6;
-        const nx = (-dz / l) * HW, nz = (dx / l) * HW;
-        const ta = m.t0 + m.cum[i] / CUT_SPEED;
-        const tb = m.t0 + m.cum[i + 1] / CUT_SPEED;
-        kerfPos.push(ax + nx, KY, az + nz, ax - nx, KY, az - nz, bx + nx, KY, bz + nz);
-        kerfPos.push(ax - nx, KY, az - nz, bx - nx, KY, bz - nz, bx + nx, KY, bz + nz);
-        kerfTime.push(ta, ta, tb, ta, tb, tb);
-      }
-    });
-    const kerfGeo = new THREE.BufferGeometry();
-    kerfGeo.setAttribute('position', new THREE.Float32BufferAttribute(kerfPos, 3));
-    kerfGeo.setAttribute('aTime', new THREE.Float32BufferAttribute(kerfTime, 1));
     const kerfMat = new THREE.ShaderMaterial({
       uniforms: { uNow: { value: 0 } },
       vertexShader: `
@@ -346,8 +415,53 @@
       polygonOffset: true,
       polygonOffsetFactor: -2,
     });
-    const kerf = new THREE.Mesh(kerfGeo, kerfMat);
+    const kerf = new THREE.Mesh(programs[0].kerfGeo, kerfMat);
     pallet.add(kerf);
+
+    // ---- the show: cut the first part once, lift it, then shuffle through the
+    // library like a mystery-box reel, landing on a new part every round ----
+    const LIFT = 1.8, SHUFFLE = 2.2, SHOW = 2.4;
+    const prog = programs[0];
+    const SHOW_START = prog.cutEnd + LIFT;
+    let shownIdx = 0;
+    let currentIdx = 0;
+    let nextIdx = 0;
+    let reel = [];
+    let roundStart = SHOW_START;
+    let spin = 0;
+    let popT = 0;
+    let landT = 0;
+
+    // quick flicks through the library that slow down and land on a new part
+    function buildReel() {
+      do { nextIdx = Math.floor(Math.random() * programs.length); } while (nextIdx === currentIdx);
+      reel = [];
+      let gap = 0.055, at = 0, prev = currentIdx;
+      while (at + gap < SHUFFLE - 0.08) {
+        at += gap;
+        let k;
+        do { k = Math.floor(Math.random() * programs.length); } while (k === prev);
+        reel.push({ t: at, idx: k });
+        prev = k;
+        gap *= 1.17;
+      }
+      if (reel.length && reel[reel.length - 1].idx === nextIdx) {
+        const before = reel.length > 1 ? reel[reel.length - 2].idx : currentIdx;
+        let k = 0;
+        while (k === nextIdx || k === before) k++;
+        reel[reel.length - 1].idx = k;
+      }
+      reel.push({ t: SHUFFLE, idx: nextIdx });
+    }
+    buildReel();
+
+    // the hole in the sheet and its kerf follow the part on show
+    function showPart(idx) {
+      shownIdx = idx;
+      part.geometry = programs[idx].partGeo;
+      voidMesh.geometry = programs[idx].voidGeo;
+      kerf.geometry = programs[idx].kerfGeo;
+    }
 
     // cut-point glow
     const glowCore = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffffff, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: false, transparent: true }));
@@ -424,6 +538,7 @@
     // where the head is, and what it is doing, at program time t
     const tmp = new THREE.Vector2();
     function headAt(t) {
+      const moves = prog.moves;
       for (let i = 0; i < moves.length; i++) {
         const m = moves[i];
         if (t >= m.t0 + m.dur) continue;
@@ -465,8 +580,10 @@
     const hudXY = document.querySelector('[data-hud="xy"]');
     const hudState = document.querySelector('[data-hud="state"]');
     const hudBar = document.querySelector('[data-hud="bar"]');
+    const hudPart = document.querySelector('[data-hud="part"]');
     let hudTick = 0;
     let lastState = '';
+    let lastPart = '';
 
     // camera framing: card view of the whole cell -> close, lower view of the cut
     const cardDir = new THREE.Vector3(0.62, 0.66, 0.92).normalize();
@@ -512,32 +629,61 @@
     let time = 0;
     function simulate(dt) {
       time += dt;
-      const t = time % LOOP;
+      const t = time;
+      const showing = t >= SHOW_START;
 
-      // pallet shuttle and part state
-      let palletX = 0;
-      if (t >= T_OUT && t < T_IN) palletX = easeIn((t - T_OUT) / SWAP) * 5.4;
-      else if (t >= T_IN) palletX = -5.4 * (1 - easeOut((t - T_IN) / SWAP));
-      pallet.position.x = palletX;
-      const fresh = t >= T_IN;
-      kerfMat.uniforms.uNow.value = fresh ? -1 : t;
+      // kerf draws live during the one real cut, then stays as cooled grooves
+      kerfMat.uniforms.uNow.value = showing ? 1e5 : t;
 
-      const released = t >= T_LIFT && !fresh;
+      const released = t >= prog.cutEnd;
       part.visible = released;
       voidMesh.visible = released;
+      let showMode = 'Part released';
       if (released) {
-        const since = t - T_LIFT;
+        const since = t - prog.cutEnd;
         const L = easeOut(clamp01(since / LIFT));
+        if (showing) {
+          while (t >= roundStart + SHUFFLE + SHOW) {
+            roundStart += SHUFFLE + SHOW;
+            currentIdx = nextIdx;
+            buildReel();
+          }
+          const st = t - roundStart;
+          let idx = currentIdx;
+          for (let i = 0; i < reel.length && st >= reel[i].t; i++) idx = reel[i].idx;
+          if (idx !== shownIdx) {
+            showPart(idx);
+            popT = 1;
+            if (st >= SHUFFLE) landT = 1;
+          }
+          const shuffling = st < SHUFFLE;
+          if (shuffling) {
+            const u = st / SHUFFLE;
+            spin += 16 * (1 - u) * (1 - u) * dt;
+          } else {
+            // settle square to the camera, then idle with a slow sway
+            const rest = Math.round(spin / (Math.PI * 2)) * Math.PI * 2;
+            spin += (rest - spin) * Math.min(1, dt * 4);
+          }
+          showMode = shuffling ? 'Shuffling' : 'Laser-cut part';
+          partMat.emissive.copy(FLASH);
+          partMat.emissiveIntensity = 0.35 * popT + 0.6 * landT;
+        } else {
+          partMat.emissive.copy(HOT);
+          partMat.emissiveIntensity = 0.4 * Math.exp(-since * 4);
+        }
+        popT = Math.max(0, popT - dt / 0.14);
+        landT = Math.max(0, landT - dt / 0.6);
         // lift and tip the face toward the camera so the finished part reads
-        part.position.y = 0.001 + L * 0.72;
+        part.scale.setScalar(1 + 0.08 * popT + 0.14 * landT);
+        part.position.y = 0.001 + L * 0.72 + (showing ? Math.sin(time * 1.4) * 0.015 : 0);
         part.position.z = L * 0.35;
-        part.rotation.set(L * 0.78, L * 0.35 + Math.max(0, since - LIFT) * 0.16, -L * 0.08);
-        partMat.emissiveIntensity = 0.4 * Math.exp(-since * 4);
+        part.rotation.set(L * 0.78, L * 0.35 + spin + (showing ? Math.sin(time * 0.6) * 0.12 : 0), -L * 0.08);
       }
 
-      // head
-      const h = t < PROGRAM_END ? headAt(t) : { x: home.x, y: home.y, mode: t >= T_OUT ? 'Pallet change' : 'Part released', beam: false };
-      if (t >= CUT_END && t < PROGRAM_END) h.mode = 'Part released';
+      // head: runs the one cut program, then parks
+      const h = t < prog.programEnd ? headAt(t) : { x: home.x, y: home.y, mode: showMode, beam: false };
+      if (released) h.mode = showMode;
       headWorld.set(h.x, TOP, -h.y);
       head.position.set(h.x, 0, -h.y);
       bridge.position.z = -h.y;
@@ -565,7 +711,9 @@
         const ymm = clamp01((h.y + SHEET_D / 2) / SHEET_D) * 1500;
         hudXY.textContent = `X ${xmm.toFixed(1).padStart(6, '0')}  Y ${ymm.toFixed(1).padStart(6, '0')}`;
         if (h.mode !== lastState) { hudState.textContent = h.mode; lastState = h.mode; }
-        hudBar.style.transform = `scaleX(${clamp01(t / CUT_END).toFixed(3)})`;
+        const name = programs[shownIdx].name;
+        if (hudPart && name !== lastPart) { hudPart.textContent = name; lastPart = name; }
+        hudBar.style.transform = `scaleX(${clamp01(t / prog.cutEnd).toFixed(3)})`;
       }
     }
 
@@ -574,12 +722,18 @@
       if (composer) composer.render(); else renderer.render(scene, camera);
     }
 
+    // upload every part's geometry once, so the first shuffle doesn't hitch
+    part.visible = voidMesh.visible = true;
+    programs.forEach((p, i) => { showPart(i); renderer.render(scene, camera); });
+    showPart(0);
+    part.visible = voidMesh.visible = false;
+
     return {
       resize,
       frame(dt) { simulate(dt); render(); },
       still() {
         // a single representative frame: mid-cut, sparks already in the air
-        time = CUT_END * 0.62 - 1.2;
+        time = prog.cutEnd * 0.62 - 1.2;
         for (let i = 0; i < 72; i++) simulate(1 / 60);
         render();
       },

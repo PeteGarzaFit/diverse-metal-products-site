@@ -170,6 +170,7 @@ section[id] { scroll-margin-top: 4.5rem; }
 .hud__tag { display: inline-flex; align-items: center; gap: 8px; }
 .hud__dot { width: 7px; height: 7px; border-radius: 50%; background: #4DA3FF; box-shadow: 0 0 0 3px rgb(77 163 255 / 0.25); animation: hudPulse 1.6s ease-in-out infinite; }
 .hud__xy { font-variant-numeric: tabular-nums; white-space: pre; }
+.hud__part { color: #fff; letter-spacing: 0.06em; }
 .hud__state { min-width: 9ch; text-align: right; color: #ffb27a; }
 .hud__bar { width: clamp(80px, 12vw, 160px); height: 3px; border-radius: 3px; background: rgb(255 255 255 / 0.14); overflow: hidden; }
 .hud__bar > i { display: block; height: 100%; background: linear-gradient(90deg, #4DA3FF, #9fd0ff); transform-origin: left; transform: scaleX(0); }
